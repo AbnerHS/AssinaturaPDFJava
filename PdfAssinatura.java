@@ -1,5 +1,6 @@
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -16,7 +17,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 public class PdfAssinatura {
 
   private static final String INPUT_FILE = "input.pdf";
-  private static final String OUTPUT_FILE = "output.pdf";
+  private static final String OUTPUT_FILE = INPUT_FILE.split("\\.")[0] + "Assinado.pdf";
 
   public static void main(String[] args) {
 
@@ -40,16 +41,18 @@ public class PdfAssinatura {
       PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(OUTPUT_FILE));
       document.open();
       for (int i = 1; i <= numberPages; i++) {
+        // Adicionar cada página ao novo pdf
         page = writer.getImportedPage(reader, i);
         Image instance = Image.getInstance(page);
         document.add(instance);
         // Adicionar assinatura apenas na primeira página
         if (i == 1) {
+          // Criar elemento da assinatura
           PdfTemplate textTemplate = writer.getDirectContent().createTemplate(pageSize.getWidth(),
               pageSize.getHeight());
           Font font = new Font(Font.FontFamily.TIMES_ROMAN, 10);
           font.setColor(new BaseColor(0, 0, 100));
-          // Criar elemento da assinatura
+          // Adicionar texto com fonte
           Paragraph assinaturaA = new Paragraph(txtAssinaturaA, font);
           Paragraph assinaturaB = new Paragraph(txtAssinaturaB, font);
           ColumnText assinatura = new ColumnText(textTemplate);
@@ -63,6 +66,7 @@ public class PdfAssinatura {
           // Quantidade de linhas
           int lines = assinatura.getLinesWritten();
           Image textImg = Image.getInstance(textTemplate);
+          // Rotacionar o texto
           textImg.setRotationDegrees(90);
           // Posição da assinatura
           textImg.setAbsolutePosition(width - (lines * 20), verticalCenter);
